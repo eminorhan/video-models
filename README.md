@@ -5,10 +5,10 @@ This is a stand-alone repository to facilitate the use of all video models I hav
 Author McAuthorface (2024) [Self-supervised learning of video representations from a child's perspective.](https://arxiv.org/abs/2402.xxxxx) arXiv:2402.xxxxx
 
 ## What you need:
-* A reasonably recent version of PyTorch and torchvision (I have `pytorch==1.11.0` and `torchvision==0.12.0`).
-* The `huggingface_hub` library to download the models from the Huggingface Hub (I have `huggingface-hub==0.14.1`).
-* The model definitions rely on the `timm` library (I have `timm==0.3.2`).
-* You **do not** need a GPU to load and use these models (although, of course, things will run faster on a GPU). 
+* A reasonably recent version of PyTorch and torchvision. The code was tested with `pytorch==1.11.0` and `torchvision==0.12.0`. Later versions would likely work fine too.
+* The `huggingface_hub` library to download the models from the Huggingface Hub. The code was tested with `huggingface-hub==0.14.1`.
+* The model definitions rely on the `timm` library. The code was tested with `timm==0.3.2`.
+* You **do not** need a GPU to load and use these models, although, of course, things will run faster on a GPU. 
 
 ## Loading the models
 Model names are specified in the format `x_y_z`, where `x` is the model type, `y` is the pretraining data the model is trained with, and `z` is the finetuning data the model is finetuned with (if any). All models have a ViT-H/14 backbone.
@@ -18,7 +18,7 @@ Model names are specified in the format `x_y_z`, where `x` is the model type, `y
 * `z` can be one of `none`, `ssv2-50shot`, `kinetics-50shot`
 
 ### Explanations
-`x`: `mae` will instantiate a spatiotemporal MAE architecture (with an encoder and a decoder), `vit` will instantiate a standard ViT-H/14 architecture. If you'd like to continue training the pretrained models with the spatiotemporal MAE objective or if you'd like to analyze the pretrained MAE models (for example, analyze their video interpolation capabilities), you should use the `mae` option. If you'd like to finetune the model on a downstream video/image recognition task, or something similar, you should choose the `vit` option instead.
+`x`: `mae` will instantiate a spatiotemporal MAE architecture (with an encoder and a decoder), `vit` will instantiate a standard ViT-H/14 architecture. If you'd like to continue training the pretrained models on some new data with the spatiotemporal MAE objective or if you'd like to analyze the pretrained MAE models (for example, analyze their video interpolation capabilities), you should use the `mae` option. If you'd like to finetune the model on a standard downstream video/image recognition task, or something similar, you should choose the `vit` option instead.
 
 `y`: `say`, `s`, `kinetics`, `kinetics-200h` represent the full SAYCam dataset, child S only, the full Kinetics-700 dataset, and a 200-hour subset of Kinetics-700, respectively. The models were all pretrained with the spatiotemporal MAE objective using code from [this repository](https://github.com/eminorhan/mae_st).
 

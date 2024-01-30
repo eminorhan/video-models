@@ -35,7 +35,13 @@ def load_model(model_name):
         msg = model.load_state_dict(ckpt['model'], strict=True)
         print(f'Loaded with message: {msg}')
     elif model_type.startswith('vit'):
-        model = models_vit.mae_vit_huge_patch14()
+        if finetune_data.startswith('ssv2'):
+            num_classes = 174
+        elif finetune_data.startswith('kinetics'):
+            num_classes = 700
+        else:
+            num_classes = None
+        model = models_vit.vit_huge_patch14(num_classes=num_classes)
         ckpt = torch.load(ckpt, map_location='cpu')['model']
         msg = model.load_state_dict(ckpt, strict=False)
         print(f'Loaded with message: {msg}')

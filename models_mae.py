@@ -201,7 +201,7 @@ class MaskedAutoencoderViT(nn.Module):
         
         return imgs
 
-    def boundary_masking(self, x, mask_ratio):
+    def center_masking(self, x, mask_ratio):
         """
         Perform per-sample boundary masking 
         x: [N, L, D], sequence
@@ -295,8 +295,8 @@ class MaskedAutoencoderViT(nn.Module):
             x, mask, ids_restore, ids_keep = self.random_masking(x, mask_ratio)
         elif mask_type == 'temporal':
             x, mask, ids_restore, ids_keep = self.temporal_masking(x, mask_ratio)
-        elif mask_type == 'boundary':
-            x, mask, ids_restore, ids_keep = self.boundary_masking(x, mask_ratio)
+        elif mask_type == 'center':
+            x, mask, ids_restore, ids_keep = self.center_masking(x, mask_ratio)
         else:
             raise NotImplementedError("Does not support {} masking".format(mask_type))
         x = x.view(N, -1, C)
