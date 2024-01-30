@@ -13,15 +13,16 @@ Author McAuthorface (2024) [Self-supervised learning of video representations fr
 ## Loading the models
 Model names are specified in the format `x_y_z`, where `x` is the model type, `y` is the pretraining data the model is trained with, and `z` is the finetuning data the model is finetuned with (if any). All models have a ViT-H/14 backbone.
 
-* `x` can be one of `mae` or `vit`
+* `x` can be one of `mae`, `vit`
 * `y` can be one of `say`, `s`, `kinetics`, `kinetics-200h`
 * `z` can be one of `none`, `ssv2-50shot`, `kinetics-50shot`
 
-`x`: `mae` will instantiate a spatiotemporal MAE architecture (with an encoder and a decoder), `vit` will instantiate a standard ViT-H/14 architecture. If you'd like to continue training the pretrained models with the spatiotemporal MAE objective or if you'd like to analyze the pretrained MAE models (for example, analyze their video interpolation capabilities), you should use the `mae` option. If you'd like to finetune the model on a downstream video recognition task, or something similar, you should choose the `vit` option instead.
+### Explanations
+`x`: `mae` will instantiate a spatiotemporal MAE architecture (with an encoder and a decoder), `vit` will instantiate a standard ViT-H/14 architecture. If you'd like to continue training the pretrained models with the spatiotemporal MAE objective or if you'd like to analyze the pretrained MAE models (for example, analyze their video interpolation capabilities), you should use the `mae` option. If you'd like to finetune the model on a downstream video/image recognition task, or something similar, you should choose the `vit` option instead.
 
-`y`: `say`, `s`, `kinetics`, `kinetics-200h` represent the full SAYCam dataset, child S only, the full Kinetics-700 dataset, and a 200-hour subset of Kinetics-700, respectively. The models were all trained with code from [this repository](https://github.com/eminorhan/mae_st).
+`y`: `say`, `s`, `kinetics`, `kinetics-200h` represent the full SAYCam dataset, child S only, the full Kinetics-700 dataset, and a 200-hour subset of Kinetics-700, respectively. The models were all pretrained with the spatiotemporal MAE objective using code from [this repository](https://github.com/eminorhan/mae_st).
 
-`z`: `none` means the model was finetuned on anything (you will need to use this option if you choose the `mae` option for `x`), `ssv2-50shot` is the 50-shot SSV2 task, and `kinetics-50shot` is the 50-shot Kinetics-700 task, as described in the paper.
+`z`: `none` means the model was not finetuned on anything (you will need to use this option if you choose the `mae` option for `x`), `ssv2-50shot` is the 50-shot SSV2 task, and `kinetics-50shot` is the 50-shot Kinetics-700 task, as described in the paper. The models were again all finetuned with code from [this repository](https://github.com/eminorhan/mae_st).
 
 You can see a full list of all available models by running:
 
