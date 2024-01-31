@@ -42,7 +42,7 @@ You can see a full list of all available models by running:
 You will get an error if you try to load an unavailable model.
 
 ## Visualizing the model completions
-In [`visualize_completion.py`](https://github.com/eminorhan/video-models/blob/master/visualize_completion.py), I provide sample code to visualize completions from pretrained spatiotemporal MAE models. An example usage would be as follows:
+In [`visualize_completion.py`](https://github.com/eminorhan/video-models/blob/master/visualize_completion.py), I provide sample code to visualize model completions from pretrained spatiotemporal MAE models. An example usage would be as follows:
 ```python
 python -u visualize_completion.py \
         --model_name 'mae_s_none' \
@@ -52,7 +52,7 @@ python -u visualize_completion.py \
         --num_vids 16 \
         --device 'cuda'
 ```
-This will randomly sample `num_vids` videos from `video_dir` and visualize the model completions together with the original sequence of frames and the masked frames. Currently, three types of masking strategies are supported: `random` (random spatiotemporal masking as in pretraining), `temporal` (masking out the final portion of the sequence), and `center` (masking out the middle part of the sequence, as described in the paper). Running the code with these masking strategies will produce images like the following:
+This will randomly sample `num_vids` videos from `video_dir` and visualize the model completions together with the original sequence of frames and the masked frames. Currently, three types of masking strategies are supported: `random` (random spatiotemporal masking as in pretraining), `temporal` (masking out the final portion of the sequence), and `center` (masking out the middle part of the sequence, as described in the paper). Running the code with these masking strategies will produce images like the following, where the top row is the original sequence, the middle row is the masked sequence, and the bottom row is the model completion:
 
 **`center`:**
 ![](comps/center/mae_s_none_center.jpg)
