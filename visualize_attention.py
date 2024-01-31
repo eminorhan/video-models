@@ -3,83 +3,23 @@ import os
 import math
 import random
 import argparse
-import av
 import torch
+import av
 import numpy as np
+
+from utils import load_model
 from torchvision.utils import save_image
-import models_vit, models_vit_img
 from util.decoder.utils import tensor_normalize, spatial_sampling
-from util.pos_embed import interpolate_pos_embed
 
 MEAN = (0.45, 0.45, 0.45)
 STD = (0.225, 0.225, 0.225)
 
 def get_args_parser():
-    parser = argparse.ArgumentParser("Visualize ViT attention", add_help=False)
-    parser.add_argument("--video_dir", default="demo", type=str, help="video directory where the video files are kept")
-    parser.add_argument("--num_vids", default=1, type=int, help="Number of videos to do")
-    parser.add_argument("--model_path", default="", type=str, help="path to pretrained model")
-    parser.add_argument("--model_path_img", default="", type=str, help="path to pretrained image model")
-
-    # Model parameters
-    parser.add_argument("--model", default="vit_huge_patch14", type=str, metavar="MODEL", help="Name of model to train")
-    parser.add_argument("--input_size", default=224, type=int, help="images input size")
-    parser.add_argument("--dropout", type=float, default=0.3)
-    parser.add_argument("--drop_path_rate", type=float, default=0.1, metavar="PCT", help="Drop path rate (default: 0.1)")
-
-    # Augmentation parameters
-    parser.add_argument("--color_jitter", type=float, default=None, metavar="PCT", help="Color jitter factor (enabled only when not using Auto/RandAug)")
-    parser.add_argument("--aa", type=str, default="rand-m7-mstd0.5-inc1", metavar="NAME", help='Use AutoAugment policy. "v0" or "original". " + "(default: rand-m9-mstd0.5-inc1)')
-    parser.add_argument("--smoothing", type=float, default=0.1, help="Label smoothing (default: 0.1)")
-
-    # * Random Erase params
-    parser.add_argument("--reprob", type=float, default=0.25, metavar="PCT", help="Random erase prob (default: 0.25)")
-    parser.add_argument("--remode", type=str, default="pixel", help='Random erase mode (default: "pixel")')
-    parser.add_argument("--recount", type=int, default=1, help="Random erase count (default: 1)")
-    parser.add_argument("--resplit", action="store_true", default=False, help="Do not random erase first (clean) augmentation split")
-
-    # * Finetuning params
-    parser.add_argument("--global_pool", action="store_true")
-    parser.set_defaults(global_pool=True)
-    parser.add_argument("--cls_token", action="store_false", dest="global_pool", help="Use class token instead of global pool for classification")
-    parser.add_argument("--data_dirs", type=str, default=[""], nargs="+", help="Data paths")
-    parser.add_argument("--datafile_dir", type=str, default="./datafiles", help="Store data files here")
-    parser.add_argument("--output_dir", default="./embeddings", help="save embeddings here, empty for no saving")
-    parser.add_argument("--device", default="cuda", help="device to use for training / testing")
-    parser.add_argument("--seed", default=0, type=int)
-    parser.add_argument("--resume", default="", help="resume from checkpoint")
-
-    parser.add_argument("--eval", action="store_true", help="Perform evaluation only")
-    parser.add_argument("--num_workers", default=10, type=int)
-    parser.add_argument("--pin_mem", action="store_true", help="Pin CPU memory in DataLoader for more efficient (sometimes) transfer to GPU.")
-    parser.add_argument("--no_pin_mem", action="store_false", dest="pin_mem")
-    parser.set_defaults(pin_mem=True)
-
-    # distributed training parameters
-    parser.add_argument("--world_size", default=1, type=int, help="number of distributed processes")
-    parser.add_argument("--local_rank", default=-1, type=int)
-    parser.add_argument("--dist_on_itp", action="store_true")
-    parser.add_argument("--dist_url", default="env://", help="url used to set up distributed training")
-
-    # Video related configs
-    parser.add_argument("--no_env", action="store_true")
-    parser.add_argument("--rand_aug", default=False, action="store_true")
-    parser.add_argument("--t_patch_size", default=2, type=int)
-    parser.add_argument("--num_frames", default=16, type=int)
-    parser.add_argument("--checkpoint_period", default=1, type=int)
-    parser.add_argument("--sampling_rate", default=2, type=int)
-    parser.add_argument("--repeat_aug", default=1, type=int)
-    parser.add_argument("--cpu_mix", action="store_true")
-    parser.add_argument("--no_qkv_bias", action="store_true")
-    parser.add_argument("--bias_wd", action="store_true")
-    parser.add_argument("--sep_pos_embed", action="store_true")
-    parser.set_defaults(sep_pos_embed=True)
-    parser.add_argument("--fp32", action="store_true")
-    parser.set_defaults(fp32=True)
-    parser.add_argument("--jitter_scales_relative", default=[1.0, 1.0], type=float, nargs="+")
-    parser.add_argument("--jitter_aspect_relative", default=[1.0, 1.0], type=float, nargs="+")
-    parser.add_argument("--cls_embed", action="store_true")
-    parser.set_defaults(cls_embed=True)
+    parser = argparse.ArgumentParser('Visualize spatiotemporal ViT attentions', add_help=False)
+    parser.add_argument('--model_name', default='vit_s_none', type=str, help='Model identifier')
+    parser.add_argument('--video_dir', default='demo_videos', type=str, help='Video directory where the video files are kept')
+    parser.add_argument('--num_vids', default=1, type=int, help='Number of videos to do')
+    parser.add_argument('--device', default='cuda', help='device to use for testing')
 
     return parser
 
@@ -280,52 +220,18 @@ def find_video_files(directory):
         subdir_idx += 1
     return mp4_files
 
-def interpolate_pos_embed_img(model, checkpoint_model):
-    """Interpolate position embeddings for high-resolution."""
-    if 'pos_embed' in checkpoint_model:
-        pos_embed_checkpoint = checkpoint_model['pos_embed']
-        embedding_size = pos_embed_checkpoint.shape[-1]
-        num_patches = model.patch_embed.num_patches
-        num_extra_tokens = model.pos_embed.shape[-2] - num_patches
-        # height (== width) for the checkpoint position embedding
-        orig_size = int((pos_embed_checkpoint.shape[-2] - num_extra_tokens) ** 0.5)
-        # height (== width) for the new position embedding
-        new_size = int(num_patches ** 0.5)
-        # class_token and dist_token are kept unchanged
-        if orig_size != new_size:
-            print("Position interpolate from %dx%d to %dx%d" % (orig_size, orig_size, new_size, new_size))
-            extra_tokens = pos_embed_checkpoint[:, :num_extra_tokens]
-            # only the position tokens are interpolated
-            pos_tokens = pos_embed_checkpoint[:, num_extra_tokens:]
-            pos_tokens = pos_tokens.reshape(-1, orig_size, orig_size, embedding_size).permute(0, 3, 1, 2)
-            pos_tokens = torch.nn.functional.interpolate(
-                pos_tokens, size=(new_size, new_size), mode='bicubic', align_corners=False)
-            pos_tokens = pos_tokens.permute(0, 2, 3, 1).flatten(1, 2)
-            new_pos_embed = torch.cat((extra_tokens, pos_tokens), dim=1)
-            checkpoint_model['pos_embed'] = new_pos_embed
-
 if __name__ == '__main__':
+
     args = get_args_parser()
     args = args.parse_args()
     print(args)
     
-    # set up and load video model
-    model = models_vit.__dict__[args.model](img_size=args.input_size, **vars(args))
-    checkpoint = torch.load(args.model_path, map_location='cpu')['model']
-    # interpolate_pos_embed(checkpoint, 16, 32)  # last, interpolate position embedding
-    msg = model.load_state_dict(checkpoint, strict=False)
-    print(msg)
+    # set up and load model
+    model = load_model(args.model_name)
     model.eval()
-    # model.cuda()
 
-    # set up and load image model
-    model_img = models_vit_img.__dict__["vit_huge_patch14"](img_size=args.input_size, num_classes=0, global_pool=False)
-    checkpoint_img = torch.load(args.model_path_img, map_location='cpu')['model']
-    # interpolate_pos_embed_img(model_img, checkpoint_img)  # interpolate position embedding
-    msg_img = model_img.load_state_dict(checkpoint_img, strict=False)
-    print(msg_img)
-    model_img.eval()
-    # model_img.cuda()
+    device = torch.device(args.device)
+    model.to(device)  # move model to device
 
     video_files = find_video_files(directory=args.video_dir)
     selected_files = random.sample(video_files, args.num_vids)
@@ -333,8 +239,7 @@ if __name__ == '__main__':
 
     for v in selected_files:
         vid = prepare_video(v)
-        # vid = vid.cuda()
-        img = vid.permute(1, 0, 2, 3)
+        vid = vid.to(device)  # move input to device
         vid = vid.unsqueeze(0)
 
         with torch.no_grad():
@@ -342,24 +247,13 @@ if __name__ == '__main__':
             # video attention
             attn = model.get_last_selfattention(vid)
             attn = attn.squeeze(0)
-            attn = attn[:, 0, 1:]
-            attn = attn.view([16, 8, 16, 16]) # last two
+            attn = attn[:, 0, 1:]  # attentions with respect to cls token
+            attn = attn.view([16, 8, 16, 16])  # all 16 attention heads (dim: 0)
             attn = torch.mean(attn, 0)
             attn = attn.unsqueeze(1)
             attn = attn.repeat(1, 3, 1, 1)
             attn = torch.nn.functional.interpolate(attn, size=(224, 224), mode='nearest-exact')
             print('Attn Vid shape:', attn.shape)
-
-            # image attention
-            attn_img = model_img.get_last_selfattention(img)
-            attn_img = torch.mean(attn_img, 1)
-            attn_img = attn_img[:, 0, 1:]
-            attn_img = attn_img.view([16, 16, 16]) # last two
-            attn_img = attn_img.unsqueeze(1)
-            attn_img = attn_img.repeat(1, 3, 1, 1)
-            attn_img = torch.nn.functional.interpolate(attn_img, size=(224, 224), mode='nearest-exact')
-            attn_img = attn_img[::2, ...]
-            print('Attn Img shape:', attn_img.shape)
 
             vid = vid.squeeze(0).permute(1, 0, 2, 3)
             vid = vid[::2, ...]
@@ -367,8 +261,8 @@ if __name__ == '__main__':
             print('Vid shape:', vid.shape)
 
             # stack vid and attn
-            vid_attn = torch.cat((vid, attn, attn_img), 0)
-            print('Vid-AttnVid-AttnImg shape:', vid_attn.shape)
+            vid_attn = torch.cat((vid, attn), 0)
+            print('Vid-Attn Vid shape:', vid_attn.shape)
 
             # save original image and attention map
             save_image(vid_attn, f'{os.path.splitext(os.path.basename(v))[0]}_vid_attn.jpg', nrow=8, padding=1, normalize=True, scale_each=True)
