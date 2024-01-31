@@ -49,10 +49,21 @@ python -u visualize_completion.py \
         --mask_ratio 0.25 \
         --mask_type 'center' \
         --video_dir 'demo_videos' \
-        --num_vids 10 \
+        --num_vids 16 \
         --device 'cuda'
 ```
-This will randomly sample `num_vids` videos from `video_dir` and visualize the model completions together with the original sequence of frames and the masked frames. Currently, three types of masking strategies are supported: `random` (random spatiotemporal masking as in pretraining), `temporal` (masking out the final portion of the sequence), and `center` (masking out the middle part of the sequence, as described in the paper). Running the code with these masking types will produce images like the following:
+This will randomly sample `num_vids` videos from `video_dir` and visualize the model completions together with the original sequence of frames and the masked frames. Currently, three types of masking strategies are supported: `random` (random spatiotemporal masking as in pretraining), `temporal` (masking out the final portion of the sequence), and `center` (masking out the middle part of the sequence, as described in the paper). Running the code with these masking strategies will produce images like the following:
+
+**`center`:**
+![](comps/center/mae_s_none_center.jpg)
+
+**`random`:**
+![](comps/random/mae_s_none_random.jpg)
+
+**`temporal`:**
+![](comps/temporal/mae_s_none_temporal.jpg)
+
+Further examples can be found in the [comps](https://github.com/eminorhan/video-models/comps) folder.
 
 ## Visualizing the attention maps
 In [`visualize_attention.py`](https://github.com/eminorhan/video-models/blob/master/visualize_attention.py), I provide sample code to visualize the last-layer attention maps of the pretrained models. An example usage would be as follows:
@@ -60,10 +71,14 @@ In [`visualize_attention.py`](https://github.com/eminorhan/video-models/blob/mas
 python -u visualize_attention.py \
         --model_name 'vit_s_none' \
         --video_dir 'demo_videos' \
-        --num_vids 10 \
+        --num_vids 16 \
         --device 'cuda'
 ```
-Similar to the above, this will randomly sample `num_vids` videos from `video_dir` and visualize the last-layer attention maps (averaged over all attention heads) together with the original sequence of frames. Running the code will produce images like the following:
+Similar to the above, this will randomly sample `num_vids` videos from `video_dir` and visualize the last-layer attention maps (averaged over all attention heads) together with the original sequence of frames. Running the above will produce images like the following:
 
-It should be straightforward to hack the code to obtain individual attention heads if you'd like to visualize them separately. 
+**`vit_s_none`:**
+![](atts/vit_s_none_y.jpg)
 
+Further examples can be found in the [atts](https://github.com/eminorhan/video-models/atts) folder.
+
+It should be straightforward to hack the code to obtain individual attention heads if you'd like to visualize them separately.
