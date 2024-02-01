@@ -2,7 +2,7 @@
 
 This is a stand-alone repository to facilitate the use of all video models I have trained so far. The models are all hosted on [this Huggingface repository](https://huggingface.co/eminorhan/video-models). For a detailed description of the models available in this repository and their capabilities, please see the following preprint:
 
-Mr Samuel Pickwick & his entourage (2024) [Self-supervised learning of video representations from a child's perspective.](https://arxiv.org/abs/2402.xxxxx) arXiv:2402.xxxxx
+Orhan AE, Wang W, Wang AN, Ren M, Lake BM (2024) [Self-supervised learning of video representations from a child's perspective.](https://arxiv.org/abs/2402.xxxxx) arXiv:2402.xxxxx
 
 ## What you need:
 * A reasonably recent version of PyTorch and torchvision. The code was tested with `pytorch==1.11.0` and `torchvision==0.12.0`. Later versions would likely work fine as well.
@@ -15,7 +15,7 @@ Model names are specified in the format `x_y_z`, where `x` is the model type, `y
 
 * `x` can be one of `mae`, `vit`
 * `y` can be one of `say`, `s`, `kinetics`, `kinetics-200h`
-* `z` can be one of `none`, `ssv2-50shot`, `kinetics-50shot`
+* `z` can be one of `none`, `ssv2-10shot`, `ssv2-50shot`, `kinetics-10shot`, `kinetics-50shot`
 
 Loading a pretrained model is then as easy as:
 
@@ -28,11 +28,11 @@ model = load_model('vit_s_none')
 This will download the corresponding pretrained checkpoint, store it in cache, build the right model architecture, and load the pretrained weights onto the model, all in one go!
 
 ### Explanations
-`x`: `mae` will instantiate a spatiotemporal MAE architecture (with an encoder and a decoder), `vit` will instantiate a standard ViT-H/14 architecture. If you'd like to continue training the pretrained models on some new data with the spatiotemporal MAE objective or if you'd like to analyze the pretrained MAE models (for example, analyze their video interpolation capabilities), you should use the `mae` option. If you'd like to finetune the model on a standard downstream video/image recognition task, or something similar, you should choose the `vit` option instead.
+`x`: `mae` will instantiate a spatiotemporal MAE architecture (with an encoder and a decoder), `vit` will instantiate a standard spatiotemporal ViT-H/14 architecture. If you'd like to continue training the pretrained models on some new data with the spatiotemporal MAE objective or if you'd like to analyze the pretrained MAE models (for example, analyze their video interpolation capabilities), you should use the `mae` option. If you'd like to finetune the model on a standard downstream video/image recognition task, or something similar, you should choose the `vit` option instead.
 
 `y`: `say`, `s`, `kinetics`, `kinetics-200h` represent the full SAYCam dataset, child S only, the full Kinetics-700 dataset, and a 200-hour subset of Kinetics-700, respectively. The models were all pretrained with the spatiotemporal MAE objective using code from [this repository](https://github.com/eminorhan/mae_st). The SLURM batch scripts used for training all models can be found [here](https://github.com/eminorhan/mae_st/tree/master/scripts). 
 
-`z`: `none` means the model was not finetuned on anything (you will need to use this option if you choose the `mae` option for `x`), `ssv2-50shot` is the 50-shot SSV2 task, and `kinetics-50shot` is the 50-shot Kinetics-700 task, as described in the paper. The models were again all finetuned with code from [this repository](https://github.com/eminorhan/mae_st). The SLURM batch scripts used for finetuning all models can be found [here](https://github.com/eminorhan/mae_st/tree/master/scripts/finetune).
+`z`: `none` means the model was not finetuned on anything (you will need to use this option if you choose the `mae` option for `x`), `ssv2-10shot` and `ssv2-50shot` are the 10-shot and 50-shot SSV2 tasks, `kinetics-10shot` and `kinetics-50shot` are the 10-shot and 50-shot Kinetics-700 tasks, as described in the paper. The models were again all finetuned with code from [this repository](https://github.com/eminorhan/mae_st). The SLURM batch scripts used for finetuning all models can be found [here](https://github.com/eminorhan/mae_st/tree/master/scripts/finetune).
 
 You can see a full list of all available models by running:
 ```python

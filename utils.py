@@ -10,20 +10,25 @@ def get_available_models():
         'mae_say_none', 'mae_s_none', 'mae_kinetics_none', 'mae_kinetics-200h_none',
         'vit_say_none', 'vit_s_none', 'vit_kinetics_none', 'vit_kinetics-200h_none',
         'vit_say_ssv2-50shot', 'vit_s_ssv2-50shot', 'vit_kinetics_ssv2-50shot', 'vit_kinetics-200h_ssv2-50shot',
+        'vit_say_ssv2-10shot', 'vit_s_ssv2-10shot', 'vit_kinetics_ssv2-10shot', 'vit_kinetics-200h_ssv2-10shot',
         'vit_say_kinetics-50shot', 'vit_s_kinetics-50shot', 'vit_kinetics_kinetics-50shot', 'vit_kinetics-200h_kinetics-50shot',
+        'vit_say_kinetics-10shot', 'vit_s_kinetics-10shot', 'vit_kinetics_kinetics-10shot', 'vit_kinetics-200h_kinetics-10shot',
         ]
 
     return available_models
 
 def load_model(model_name):
 
+    # make sure model is valid
+    assert model_name in get_available_models(), 'Unrecognized model!'
+
     # parse identifier
     model_type, pretrain_data, finetune_data = model_name.split('_')
 
     # checks
-    assert model_type in ['mae', 'vit']
+    assert model_type in ['mae', 'vit'], 'Unrecognized model type!'
     assert pretrain_data in ['say', 's', 'kinetics', 'kinetics-200h'], 'Unrecognized pretraining data!'
-    assert finetune_data in ['none', 'ssv2-50shot', 'kinetics-50shot'], 'Unrecognized finetuning data!'
+    assert finetune_data in ['none', 'ssv2-50shot', 'kinetics-50shot', 'ssv2-10shot', 'kinetics-10shot'], 'Unrecognized finetuning data!'
 
     # download checkpoint from hf
     ckpt_filename = pretrain_data + '_' + finetune_data + '.pth'
@@ -47,4 +52,3 @@ def load_model(model_name):
         print(f'Loaded with message: {msg}')
 
     return model
-
