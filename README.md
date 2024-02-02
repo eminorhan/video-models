@@ -45,7 +45,7 @@ The models were all pretrained with the spatiotemporal MAE objective using code 
 **Finetuning data (`z`):** 
 * `none`: no finetuning (you will need to use this option if you choose the `mae` option for `x`) 
 * `ssv2-10shot`: the 10-shot SSV2 task 
-* `ssv2-50shot`: the 50-shot SSV2 tasks 
+* `ssv2-50shot`: the 50-shot SSV2 task
 * `kinetics-10shot`: the 10-shot Kinetics-700 task 
 * `kinetics-50shot`: the 50-shot Kinetics-700 task 
 
@@ -98,7 +98,7 @@ Similar to the above, this will randomly sample `num_vids` videos from `video_di
 
 Further examples can be found in the [atts](https://github.com/eminorhan/video-models/atts) folder.
 
-It should be straightforward to hack the code to obtain individual attention heads if you'd like to visualize them separately.
+It should be straightforward to hack the code to obtain the individual attention heads if you'd like to visualize them separately.
 
 ## Acknowledgments
 The model definitions and parts of the code here are recycled from Facebook's excellent [Spatiotemporal Masked Autoencoders](https://github.com/facebookresearch/mae_st) repository.
