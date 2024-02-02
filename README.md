@@ -43,7 +43,7 @@ If you'd like to continue training the pretrained models on some new data with t
 The models were all pretrained with the spatiotemporal MAE objective using code from [this repository](https://github.com/eminorhan/mae_st). The SLURM batch scripts used for training all models can be found [here](https://github.com/eminorhan/mae_st/tree/master/scripts). 
 
 **Finetuning data (`z`):** 
-* `none`: the model was not finetuned on anything (you will need to use this option if you choose the `mae` option for `x`) 
+* `none`: the model was not finetuned on anything (you'll need to use this option if you choose the `mae` option for `x`) 
 * `ssv2-10shot`: the 10-shot SSV2 task 
 * `ssv2-50shot`: the 50-shot SSV2 tasks 
 * `kinetics-10shot`: the 10-shot Kinetics-700 task 
