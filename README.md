@@ -80,7 +80,7 @@ This will randomly sample `num_vids` videos from `video_dir` and visualize the m
 **`temporal`:**
 ![](comps/temporal/mae_s_none_temporal.jpg)
 
-Further examples can be found in the [comps](https://github.com/eminorhan/video-models/comps) folder.
+Further examples can be found in the [comps](https://github.com/eminorhan/video-models/tree/master/comps) folder.
 
 ## Visualizing the attention maps
 In [`visualize_attention.py`](https://github.com/eminorhan/video-models/blob/master/visualize_attention.py), I provide sample code to visualize the last-layer attention maps of the pretrained models. An example usage would be as follows:
@@ -96,7 +96,7 @@ Similar to the above, this will randomly sample `num_vids` videos from `video_di
 **`vit_s_none`:**
 ![](atts/vit_s_none_y.jpg)
 
-Further examples can be found in the [atts](https://github.com/eminorhan/video-models/atts) folder.
+Further examples can be found in the [atts](https://github.com/eminorhan/video-models/tree/master/atts) folder.
 
 It should be straightforward to hack the code to obtain the individual attention heads if you'd like to visualize them separately.
 
