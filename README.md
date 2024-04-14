@@ -1,8 +1,8 @@
 # A menagerie of video models trained on various video datasets
 
-This is a stand-alone repository to facilitate the use of all video models I have trained so far. The models are all hosted on [this Huggingface repository](https://huggingface.co/eminorhan/video-models). For a detailed description of the models available in this repository and their capabilities, please see the following preprint:
+This is a stand-alone repository to facilitate the use of all video models I have trained so far. The models are all hosted on [this Huggingface repository](https://huggingface.co/eminorhan/video-models). For a detailed description of the models available in this repository and their capabilities, please see the following paper:
 
-Orhan AE, Wang W, Wang AN, Ren M, Lake BM (2024) [Self-supervised learning of video representations from a child's perspective.](https://arxiv.org/abs/2402.00300) arXiv:2402.00300.
+Orhan AE, Wang W, Wang AN, Ren M, Lake BM (2024) [Self-supervised learning of video representations from a child's perspective.](https://arxiv.org/abs/2402.00300) *CogSci 2024* (oral).
 
 ## What you need:
 * A reasonably recent version of PyTorch and torchvision. The code was tested with `pytorch==1.11.0` and `torchvision==0.12.0`. Later versions would likely work fine as well.
