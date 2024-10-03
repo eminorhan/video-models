@@ -1,6 +1,8 @@
 # A menagerie of video models trained on various video datasets
 
-<span style="color:red">**Update (Oct 3, 2024):**</span> All models are updated. We trained the models with a larger batch size and for much longer. This resulted in substantial improvements in downstream evaluations. Please see the updated arxiv preprint below for the new evaluation results. If you downloaded any of the models here before Oct 3, 2024, please re-download them from this repository again for much improved versions.
+**Update (Oct 3, 2024):** All models are updated. We retrained all the models with a larger batch size and for much longer. This resulted in substantial improvements in downstream evaluations. Please see the updated arxiv preprint below for the new evaluation results. If you downloaded any of the models here before Oct 3, 2024, please redownload them from this repository again for much improved versions.
+
+---
 
 This is a stand-alone repository to facilitate the use of all video models I have trained so far. The models are all hosted on [this Huggingface repository](https://huggingface.co/eminorhan/video-models). For a detailed description of the models available in this repository and their capabilities, please see the following paper:
 
