@@ -1,6 +1,6 @@
 # A menagerie of video models trained on various video datasets
 
-**Update (Oct 3, 2024):** All models are updated. We retrained all the models with a larger batch size and for much longer. This resulted in substantial improvements in downstream evaluations. Please see the updated arxiv preprint below for the new evaluation results. If you downloaded any of the models here before Oct 3, 2024, please redownload them from this repository again for much improved versions.
+**Update (Oct 3, 2024):** All models in this repository are updated. We retrained all the models with a larger batch size and for much longer. This resulted in substantial improvements in downstream evaluations. Please see the updated arxiv preprint below for the new evaluation results. If you downloaded any of the models here before Oct 3, 2024, please redownload them from this repository again for much improved versions.
 
 ---
 

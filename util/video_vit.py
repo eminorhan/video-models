@@ -5,6 +5,7 @@ import torch
 import torch.nn as nn
 from timm.models.layers import to_2tuple
 from timm.models.vision_transformer import DropPath, Mlp
+import torch.nn.functional as F
 
 
 class PatchEmbed(nn.Module):
@@ -78,20 +79,23 @@ class Attention(nn.Module):
         self.input_size = input_size
         assert input_size[1] == input_size[2]
 
-    def forward(self, x):
+    def forward(self, x, return_attention=False):
         B, N, C = x.shape
         q = (self.q(x).reshape(B, N, self.num_heads, C // self.num_heads).permute(0, 2, 1, 3))
         k = (self.k(x).reshape(B, N, self.num_heads, C // self.num_heads).permute(0, 2, 1, 3))
         v = (self.v(x).reshape(B, N, self.num_heads, C // self.num_heads).permute(0, 2, 1, 3))
 
-        attn = (q @ k.transpose(-2, -1)) * self.scale
-        attn = attn.softmax(dim=-1)
+        if return_attention:
+            attn = (q @ k.transpose(-2, -1)) * self.scale
+            attn = attn.softmax(dim=-1)
+            return attn
+        
+        x = F.scaled_dot_product_attention(q, k, v)  # flash attention-2
 
-        x = (attn @ v).transpose(1, 2).reshape(B, N, C)
+        x = x.transpose(1, 2).contiguous().view(B, N, C)
         x = self.proj(x)
         x = self.proj_drop(x)
-        x = x.view(B, -1, C)
-        return x, attn
+        return x
 
 
 class Block(nn.Module):
@@ -134,9 +138,10 @@ class Block(nn.Module):
         )
 
     def forward(self, x, return_attention=False):
-        y, attn = self.attn(self.norm1(x))
         if return_attention:
+            attn = self.attn(self.norm1(x), return_attention=True)
             return attn
-        x = x + self.drop_path(y)
+
+        x = x + self.drop_path(self.attn(self.norm1(x)))
         x = x + self.drop_path(self.mlp(self.norm2(x)))
         return x

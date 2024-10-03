@@ -33,15 +33,11 @@ class VisionTransformer(nn.Module):
         num_heads=12,
         mlp_ratio=4.0,
         no_qkv_bias=False,
-        qk_scale=None,
-        drop_rate=0.0,
-        attn_drop_rate=0.0,
         drop_path_rate=0.1,
         norm_layer=nn.LayerNorm,
         dropout=0.3,
         sep_pos_embed=True,
-        cls_embed=True,
-        **kwargs,
+        cls_embed=True
     ):
         super().__init__()
         print(locals())
