@@ -104,5 +104,16 @@ Further examples can be found in the [atts](https://github.com/eminorhan/video-m
 
 It should be straightforward to hack the code to obtain the individual attention heads if you'd like to visualize them separately.
 
+## Testing on video recognition
+I also include some minimal test code in [`test_video_recognition.py`](https://github.com/eminorhan/video-models/blob/master/test_video_recognition.py) to check the validation accuracy of the finetuned models in downstream video recognition tasks (SSV2 or Kinetics-700). You can use it as follows:
+```python
+python -u test_video_recognition.py \
+        --model_name 'vit_s_ssv2-50shot' \
+        --img_size 224 \
+        --batch_size 256 \
+        --val_dir VAL_DIR \
+```
+where `val_dir` is the path to the validation set of the appropriate downstream recognition task. Note that the task should be the same as the one the model was finetuned on.
+
 ## Acknowledgments
 The model definitions and parts of the code here are recycled from Facebook's excellent [Spatiotemporal Masked Autoencoders](https://github.com/facebookresearch/mae_st) repository.
