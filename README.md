@@ -9,10 +9,10 @@ This is a stand-alone repository to facilitate the use of all video models I hav
 Orhan AE, Wang W, Wang AN, Ren M, Lake BM (2024) [Self-supervised learning of video representations from a child's perspective.](https://arxiv.org/abs/2402.00300) *CogSci 2024* (oral).
 
 ## What you need:
-* A reasonably recent version of PyTorch and torchvision. The code was tested with `pytorch==1.11.0` and `torchvision==0.12.0`. Later versions would likely work fine as well.
-* The `huggingface_hub` library to download the models from the Huggingface Hub. The code was tested with `huggingface-hub==0.14.1`.
-* The model definitions rely on the `timm` library. The code was tested with `timm==0.3.2`.
-* You **do not** need a GPU to load and use these models, although, of course, things will run faster on a GPU. 
+* A reasonably recent version of PyTorch and torchvision. The code was tested with `pytorch==2.4.0` and `torchvision==0.19.0`.
+* The `huggingface_hub` library to download the models from the Huggingface Hub. The code was tested with `huggingface-hub==0.24.5`.
+* The model definitions rely on the `timm` library. The code was tested with `timm==1.0.8`.
+* You **do not** need a GPU to load and use these models, although, of course, things will run much faster on a GPU.
 
 ## Loading the models
 Model names are specified in the format `x_y_z`, where `x` is the model type, `y` is the pretraining data the model is trained with, and `z` is the finetuning data the model is finetuned with (if any). All models have a ViT-H/14 backbone.
